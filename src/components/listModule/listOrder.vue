@@ -123,7 +123,7 @@
                 :visible.sync="guestInfoFormVisible"
                 append-to-body>
 
-                <el-form :model="form" ref="form">
+                <el-form :model="form" :rules="rules" ref="form">
 
                   <!--酒店信息-->
                   <el-row>
@@ -142,7 +142,6 @@
                       </div>
                     </el-col>
                   </el-row>
-
                   <el-row>
                     <el-col :span="12">
                       <div class="grid-content">
@@ -184,14 +183,12 @@
                       </div>
                     </el-col>
                   </el-row>
-
-
                   <!--酒店信息-->
                   <el-row>
                     <el-col :span="12">
                       <div class="grid-content">
                         <el-form-item label="入住者名称" :label-width="formLabelWidth"><!--入住者名称-->
-                          <el-input v-model="form.guestname" autocomplete="off"></el-input>
+                          <el-input v-model="form.guest_name" autocomplete="off"></el-input>
                         </el-form-item>
                       </div>
                     </el-col>
@@ -280,7 +277,7 @@
 
               <div slot="footer" class="dialog-footer">
                 <el-button @click="hotelFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="showPrice('form')">确 定</el-button>
+                <el-button type="primary" @click="guestInfoFormVisible = true">确 定</el-button>
               </div>
             </el-dialog>
             <!--外层酒店订单表单结束-->
@@ -292,7 +289,7 @@
 
       <!--表格的内容部分-->
       <el-table
-        :data="tableData"
+        :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)"
         style="width: 100%;
         margin-top: 15px;">
         <el-table-column
@@ -317,7 +314,7 @@
           width="120">
         </el-table-column>
         <el-table-column
-          prop="guestname"
+          prop="guest_name"
           label="入住人"
           width="120">
         </el-table-column>
@@ -378,7 +375,7 @@
           </el-form-item>
 
           <el-form-item label="入住者名称" :label-width="formLabelWidth"><!--入住者名称-->
-            <el-input v-model="form.guestname" autocomplete="off"></el-input>
+            <el-input v-model="form.guest_name" autocomplete="off"></el-input>
           </el-form-item>
 
           <el-form-item label="入住者联系方式" :label-width="formLabelWidth"><!--入住者联系方式-->
@@ -387,8 +384,8 @@
 
           <el-form-item label="订单状态" :label-width="formLabelWidth"><!--选择房型-->
             <el-select v-model="form.order_state" placeholder="请选择状态">
-              <el-option label="已完成" value="finlish"></el-option>
-              <el-option label="已取消" value="cancel"></el-option>
+              <el-option label="已完成" value="已完成"></el-option>
+              <el-option label="已取消" value="已取消"></el-option>
             </el-select>
           </el-form-item>
 
@@ -437,7 +434,7 @@
           this.form.order_id=row.order_id;
           this.form.room_type_name=row.room_type_name;
           this.form.room_number=row.room_number;
-          this.form.guestname=row.guestname;
+          this.form.guest_name=row.guest_name;
           this.form.guest_tel=row.guest_tel;
           this.form.order_state=row.order_state;
         },
@@ -469,6 +466,7 @@
               type: 'success',
               message: '删除成功!'
             });
+            window.location.reload();
           }).catch(() => {
             this.$message({
               type: 'info',
@@ -486,7 +484,7 @@
                 order_id:this.form.order_id,
                 room_type_name:this.form.room_type_name,
                 room_number:this.form.room_number,
-                guestname:this.form.guestname,
+                guest_name:this.form.guest_name,
                 guest_tel:this.form.guest_tel,
                 order_state:this.form.order_state
               }
@@ -497,7 +495,11 @@
               });
 
               this.dialogFormVisible1=false;
-
+              this.$message({
+                type: 'success',
+                message: '操作成功!',
+              });
+              window.location.reload();
             }else {
               return false
             }
@@ -517,7 +519,7 @@
                   out_date:this.form.out_date,
                   roomHao:this.form.roomHao,
 
-                  guestname:this.form.guestname,
+                  guest_name:this.form.guest_name,
                   guest_sex:this.form.guest_sex,
                   guest_tel:this.form.guest_tel,
                   guest_email:this.form.guest_email,
@@ -531,11 +533,11 @@
 
                   order_time:this.form.order_time,
 
-                  room_consume_type_id:this.form.room_consume_type_id,
+                  room_consume_id:this.form.room_consume_id,
                   user_id:this.form.user_id,
                   order_state:this.form.order_state,
                   subscription:this.form.subscription,
-                  all_money:this.form.all_money,
+                  order_price:this.form.order_price,
                   pay:this.form.pay,
                   tax:this.form.tax,
                   server_money:this.form.server_money
@@ -549,7 +551,11 @@
 
               this.hotelFormVisible=false;
               this.guestInfoFormVisible=false;
-
+              this.$message({
+                type: 'success',
+                message: '操作成功!',
+              });
+              window.location.reload();
             }else {
               return false
             }
@@ -622,6 +628,8 @@
             form: {
               order_id:'',
               hotel:'',
+              hotel_id:'',//订单属于哪个酒店
+              room_type_id:'',
               room_type_name:'',
               consume:'',
 
@@ -630,7 +638,7 @@
               in_date:'',
               out_date:'',
 
-              guestname:'',
+              guest_name:'',//
               guest_tel:'',
               guest_email:'',
               adultNum:'1',
@@ -640,18 +648,40 @@
               sex:'',
               specials:'',
 
-              order_state:'已完成',//默认已完成
+              order_state:'',//默认已完成
               order_hao:'2018120720287508',//自动生成
               order_time:'',//获取当前时间磋
-              room_consume_type_id:'1',//获取房间价格类型
+              room_consume_id:'1',//获取房间价格类型//
               user_id:'1',//获取当前用户id
               subscription:'NULL',//默认null
-              all_money:'NULL',//默认生成
+              order_price:'NULL',//默认生成
 
               pay:'NULL',//
               tax:'NULL',//默认生成
               server_money:'NULL',//默认生成
 
+            },
+            rules:{
+              guest_name: [
+                { required: true, message: '请输入入住人名称', trigger: 'blur' },
+                { min: 3, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur' }
+              ],
+              guest_email: [
+                { required: true, message: '请输入有效邮箱', trigger: 'blur' },
+                { min: 3, max: 5, message: '请选择', trigger: 'blur' }
+              ],
+              guest_tel:[
+                { required: true, message: '请输入手机号', trigger: 'blur' },
+                { min:11,max:11,  message: '请输入正确的手机号', trigger: 'blur' }
+              ],
+              contact_name:[
+                { required: true, message: '请输入联系人名称', trigger: 'blur' },
+                { min: 3, max: 5, message: '请选择', trigger: 'blur' }
+              ],
+              contact_phone:[
+                { required: true, message: '请输入手机号', trigger: 'blur' },
+                { min:11,max:11,  message: '请输入正确的手机号', trigger: 'blur' }
+              ]
             },
             hotelFormVisible:false,
             guestInfoFormVisible:false,

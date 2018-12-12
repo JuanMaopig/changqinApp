@@ -1,22 +1,16 @@
 <template>
   <div id="app">
-    <!--面包屑导航-->
-    <el-breadcrumb separator-class="el-icon-arrow-right">
+    <el-breadcrumb separator-class="el-icon-arrow-right"><!--面包屑导航-->
       <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>人员管理</el-breadcrumb-item>
       <el-breadcrumb-item>用户列表</el-breadcrumb-item>
     </el-breadcrumb><!--面包屑导航结束-->
-
-    <!--搜索框-->
     <el-row>
       <el-input v-model="input" placeholder="姓名" class="N"></el-input>
       <el-button type="primary" class="C" size="small" @click="searchUser()">查询</el-button>
     </el-row>
-    <!--搜索框-->
-
-    <!--表格部分-->
     <el-table
-      :data="tableData2"
+      :data="tableData2.slice((currentPage-1)*pagesize,currentPage*pagesize)"
       style="width: 100%"
       :row-class-name="tableRowClassName">
       <el-table-column
@@ -91,17 +85,19 @@
         </template>
       </el-table-column>
     </el-table>
-    <!--表格部分-->
-
-    <!--<el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="currentPage4"
-      :page-sizes="[100, 200, 300, 400]"
-      :page-size="100"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="400">
-    </el-pagination>-->
+    <el-pagination
+      background
+      @size-change="handleSizeChange_"
+      @current-change="handleCurrentChange_"
+      :pager-count="5"
+      :current-page.sync="currentPage"
+      :page-size="pagesize"
+      prev-text="<"
+      next-text=">"
+      layout="total, prev, pager, next"
+      :total="totalCount"
+      style="position: fixed;left: 66%;top: 500px;">
+    </el-pagination>
   </div>
 </template>
 
@@ -111,6 +107,9 @@
     data() {
       this.$options.methods.created(this);
       return {
+        totalCount: 0,
+        currentPage: 1,
+        pagesize: 4,
         dialogFormVisible_: false,
         dialogFormVisible: false,
         form: {
@@ -127,39 +126,15 @@
         centerDialogVisible: false,
         input: '',
         tableData2: []
-        // {
-        //   userid: '1',
-        //   username: '西门吹嘘',
-        //   realname:'张三',
-        //   sex: '男',
-        //   email:'657885688@qq.com',
-        //   tel:'123456897'
-        // },{
-        //   userid: '1',
-        //   username: '西门吹嘘',
-        //   realname:'张三',
-        //   sex: '男',
-        //   email:'657885688@qq.com',
-        //   tel:'123456897'
-        // },{
-        //   userid: '1',
-        //   username: '西门吹嘘',
-        //   realname:'张三',
-        //   sex: '男',
-        //   email:'657885688@qq.com',
-        //   tel:'123456897'
-        // },{
-        //   userid: '1',
-        //   username: '西门吹嘘',
-        //   realname:'张三',
-        //   sex: '男',
-        //   email:'657885688@qq.com',
-        //   tel:'123456897'
-        // }
-
       }
     },
     methods: {
+      handleSizeChange_(val) {
+        console.log(`每页 ${val} 条`);
+      },
+      handleCurrentChange_(val) {
+        console.log(`当前页: ${val}`);
+      },
       created(id){
         // console.log("哈哈哈哈哈哈哈哈哈哈哈哈哈");
         var that=id;
@@ -167,6 +142,7 @@
           .then(function (resp) {
             // console.log(resp.data);
             that.tableData2=resp.data;
+            that.totalCount=that.tableData2.length;
           })
       },
       tableRowClassName(){

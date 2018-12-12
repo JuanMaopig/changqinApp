@@ -1,18 +1,20 @@
 <template>
   <!--房间列表-->
   <div class="roomList">
+
     <!--表头-->
     <el-row type="flex" :gutter="15">
-      <!--房间搜索-->
+     <el-form :model="Roomform" ref="Roomform">
+        <!--房间搜索-->
       <el-col :xs="4" :sm="5" :md="6" :lg="7" :xl="8">
         <div class="grid-content bg-purple">
-          <el-input v-model="input1" class="input" placeholder="房间号"></el-input>
+          <el-input v-model="Roomform.input1" class="input" placeholder="房间号"></el-input>
         </div>
       </el-col>
       <!--查询按钮-->
       <el-col :xs="2" :sm="2" :md="2" :lg="3" :xl="4">
         <div class="grid-content bg-purple">
-          <el-button type="primary" plain  @click="newRoom(this)">查询</el-button>
+          <el-button type="primary" plain  @click="newRoom">查询</el-button>
         </div>
       </el-col>
       <!--新增按钮-->
@@ -21,12 +23,13 @@
           <el-button type="primary" @click="dialogVisible = true">新增</el-button>
         </div>
       </el-col>
+     </el-form>
     </el-row>
     <br>
     <br>
     <br>
     <!--表头-->
-    <el-table :data="roomtableData" border style="width: 100%">
+    <el-table :data="roomtableData.slice((currentPage-1)*pagesize,currentPage*pagesize)"  style="width: 100%">
         <el-table-column prop="room_id" label="房间号" width="180">
         </el-table-column>
         <el-table-column prop="door_hao" label="类型名称" width="180">
@@ -51,7 +54,7 @@
     </el-table>
     <!--编辑弹框-->
     <el-dialog title="房间列表编辑" :visible.sync="dialogFormVisible">
-      <el-form :model="Roomform" :ref="Roomform">
+      <el-form :model="Roomform" ref="Roomform">
         <!--酒店名称、默认-->
         <el-form-item label="酒店名称" :label-width="formLabelWidth">
           <el-select v-model="Roomform.room_type_id" placeholder="常青谷">
@@ -86,7 +89,7 @@
     </el-dialog>
     <!--新增房间-->
     <el-dialog title="新增房间" :visible.sync="dialogVisible" width="40%" :before-close="handleClose">
-      <el-form :model="Roomform"  :ref="Roomform">
+      <el-form :model="Roomform"  ref="Roomform">
       <!--固定的房间类型-->
         <el-row>
           <el-col :span="8">
@@ -140,30 +143,48 @@
         </el-row>
       </el-form>
     </el-dialog>
+
+    <!--分页按钮-->
+    <el-pagination
+      background
+      @size-change="handleSizeChange_"
+      @current-change="handleCurrentChange_"
+      :pager-count="5"
+      :current-page.sync="currentPage"
+      :page-size="pagesize"
+      prev-text="<"
+      next-text=">"
+      layout="total, prev, pager, next"
+      :total="totalCount"
+      style="position: fixed;left: 66%;top: 500px;">
+    </el-pagination>
+
   </div>
 </template>
 <script>
   let options= [{
-      value: '选项1',
+      value: '夯土小屋',
       label: '夯土小屋'
     }, {
-      value: '选项2',
+      value: '夯土小屋双人',
       label: '夯土小屋双人'
     }, {
-      value: '选项3',
+      value: '树顶别墅双人',
       label: '树顶别墅双人'
     }, {
-      value: '选项4',
+      value: '树顶别墅三人',
       label: '树顶别墅三人'
     }];
   export default {
+    name: `roomList`,
 
-      name: `roomList`,
       data() {
         this.$options.methods.created(this);
         return {
+          totalCount: 0,
+          currentPage: 1,
+          pagesize: 4,
           input:'',
-          input1:'',
           dialogVisible: false,
           roomtableData:[],
           options:options,
@@ -175,7 +196,8 @@
             room_state:'',
             isactive: '',
             input:'',
-            value1:''
+            value1:'',
+            input1:''
           },
           formLabelWidth: '120px',
         }
@@ -189,6 +211,7 @@
             .then(function (resp) {
               // console.log("2222222");
               id.roomtableData=resp.data;
+              // console.log(resp.data)
             });
         },
         //编辑弹框里面的参数
@@ -215,6 +238,7 @@
               }
             }).then(function (resp) {
                 console.log("成功");
+              window.location.reload();
               roomtableData=resp.data;
               }).catch(function (err) {
                 console.log(err)
@@ -232,13 +256,10 @@
         },
 
       //编辑弹框的数据
-      submit_Form(form){
-        console.log("1111111111111111");
-        this.dialogFormVisible=false;
-        this.$refs[form].validate((valid) => {
+      submit_Form(Roomform){
+        this.$refs.Roomform.validate((valid) => {
           if (valid) {
             //编辑部门表单传数据
-
             this.$axios.get('/room/roomModify.do', {
               params:{
                 room_type_id:this.Roomform.room_type_id,
@@ -251,6 +272,7 @@
               }).catch(function (err) {
                 console.log(err)
               });
+            this.dialogFormVisible1=false;
           } else {
             return false;
           }
@@ -258,61 +280,42 @@
       },
       //新增房间
       submitForm(Roomform) {
-          var that=this;
-        console.log("123456789");
-        that.dialogFormVisible = false;
-        that.$refs[Roomform].validate((valid) => {
+        // console.log("123456789");
+        this.$refs.Roomform.validate((valid)=> {
           if (valid) {
-            //添加部门表单传数据
-
-            // let formData=[that.form.input,that.form.value1];
-            that.$axios.get('/room/roomNew.do', {
+            this.$axios.get('/room/roomNew.do', {
               params:{
-                room_id:row.room_id,
-                door_hao:that.Roomform.value1,
-                room_type_id:that.Roomform.room_type_id,
-                room_state:that.Roomform.room_state,
-                isactivet:that.Roomform.isactive
+                room_id:this.Roomform.input,
+                door_hao:this.Roomform.value1,
+                room_type_id:this.Roomform.room_type_id,
+                isactivet:this.Roomform.isactive,
+                room_state:this.Roomform.room_state,
+
               }
-            })
-              .then(function (resp) {
-                console.log("======+"+resp.data);
-                if(resp.data.state=="err"){
-                  console.log(resp.err);
-                }
-                if(resp.data.state=="ok"){
-                  console.log("添加成功");
-                }
-                this.ruleForm.name=undefined;
-                this.ruleForm.person=undefined;
-              })
-              .catch(function (err) {
+            }).then(function (res) {
+                console.log("ok");
+            }).catch(function (err) {
                 console.log(err);
               });
 
-
+            this.dialogFormVisible = false;
             this.EditDialogFormVisible = false;
-            this.$message({
-              type: 'success',
-              message: '操作成功!',
-            });
-            this.$options.methods.created(this);
           } else {
             return false;
           }
         });
-        this.$refs[Roomform].resetFields();
       },
     //房间号搜索
-    newRoom(id){
-      id.$axios.get('/room/selectRoom.do',{
-        params:{room_id:input1}
-      }).then(function (resp) {
-          id.roomtableData=resp.data;
-        }).catch(function (err) {
-        console.log(err);
-      });
-    }
+        newRoom(){
+          this.$axios.get('/room/selectRoom.do',{
+            params:{room_id:this.Roomform.input1}
+          }).then(function (resp) {
+            // this.roomtableData=resp.data;
+            console.log(resp.data+"dasdasdasd");
+          }).catch(function (err) {
+            console.log(err);
+          });
+        }
   }
   };
 </script>

@@ -311,8 +311,8 @@
     white-space: nowrap;
   }
   .el-pagination{
-    position: absolute;
-    bottom: 20px;
+    position: fixed;
+    top:90%;
     right: 10%;
   }
 </style>

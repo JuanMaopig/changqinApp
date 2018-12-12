@@ -1,31 +1,31 @@
 <template>
  <div id="app">
-   <!--面包屑导航-->
-   <el-breadcrumb separator-class="el-icon-arrow-right">
+   <el-breadcrumb separator-class="el-icon-arrow-right"><!--面包屑导航-->
      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-     <el-breadcrumb-item>部门管理</el-breadcrumb-item>
+     <el-breadcrumb-item>企业管理</el-breadcrumb-item>
+     <el-breadcrumb-item>部门列表</el-breadcrumb-item>
    </el-breadcrumb><!--面包屑导航结束-->
    <!--添加部门按钮-->
-   <el-row>
+   <el-row style="margin-top: 15px">
      <el-button type="primary" plain size="mini" class="button" @click="dialogFormVisible = true">添加部门</el-button>
    </el-row>
    <el-table
      :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)"
-     style="width: 100%">
-     <!--<el-table-column-->
-       <!--label="部门id"-->
-       <!--width="180">-->
-       <!--<template slot-scope="scope">-->
-         <!--&lt;!&ndash;<i class="el-icon-time"></i>&ndash;&gt;-->
-         <!--<span style="margin-left: 10px">{{ scope.row.depart_id }}</span>-->
-       <!--</template>-->
-     <!--</el-table-column>-->
+     style="width: 100%;margin-top: 15px">
+     <el-table-column
+       label="部门id"
+       width="180">
+       <template slot-scope="scope">
+         <!--<i class="el-icon-time"></i>-->
+         <span style="margin-left: 10px">{{ scope.row.depart_id }}</span>
+       </template>
+     </el-table-column>
      <el-table-column
        label="创建日期"
        width="180">
        <template slot-scope="scope">
          <i class="el-icon-time"></i>
-         <span style="margin-left: 10px">{{ scope.row.c_date }}</span>
+         <span style="margin-left: 10px">{{ scope.row.createTime }}</span>
        </template>
      </el-table-column>
      <el-table-column
@@ -157,19 +157,19 @@ export default {
       var that=id;
       // let currentPage=1;//设置当前默认在第1页
       // that.pageStatus=false;
-      console.log("进来啦=======");
-      that.$axios.get('/department/operateApart.do')
+
+      that.$axios.get('http://172.16.6.36:9999/manage/apartmentCtroller/operateApart.do')
         .then(function (resp) {
-          console.log("请求之后的回调函数执行");
-          // console.log(resp.data);
+          // console.log("请求之后的回调函数执行");
+          console.log(resp.data);
 
           // that.total=resp.data.length;//根据后台数据 得到一共有多少页
 
           // that.pageStatus=true;
-          that.totalCount=that.tableData.length;
-console.log("========++"+resp.data);
           that.tableData=resp.data;
-          console.log(that.tableData);
+          that.totalCount=that.tableData.length;
+
+
           // console.log(data);
         })
     },
@@ -183,47 +183,43 @@ console.log("========++"+resp.data);
       // console.log(this.ruleForm.Id);
     },
 
-
+//     let myId=row.depart_id;
+// this.$axios.get('http://172.16.6.36:9999/manage/apartmentCtroller/deleteApart.do', {
 //============删除数据==============
     handleDelete(index, row) {
-      // console.log(index, row);
+
+      console.log(index, row);
       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        let myId=row.id;
-        console.lo
-        this.$axios.get('/department/deleteApart.do', {
+        let myId=row.depart_id;
+        this.$axios.get('http://172.16.6.36:9999/manage/apartmentCtroller/deleteApart.do', {
           params:{
             myId
           }
         })
-          let that=this
           .then(function (resp) {
-            // console.log("成功");
-            if(resp.data.state='ok'){
-              that.$message({
-                type: 'success',
-                message: '删除成功!'
-              });
-            }else{
-
-            }
+            console.log("成功");
           })
           .catch(function (err) {
             console.log(err)
           });
-        // this.$options.methods.created(this);
-
+        this.$options.methods.created(this);
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        });
       }).catch(() => {
         this.$message({
           type: 'info',
-          message: '删除无效'
+          message: '已取消删除'
         });
       });
 
     },
+
 
 
 //============编辑数据==============
@@ -234,13 +230,14 @@ console.log("========++"+resp.data);
             let editData=[this.ruleForm.Id,this.ruleForm.name,this.ruleForm.person];
             // console.log(editData);
             // console.log(this.ruleForm.Id);
-            this.$axios.get('/department/editApart.do', {
+            this.$axios.get('http://172.16.6.36:9999/manage/apartmentCtroller/editApart.do', {
               params:{
                 editData
               }
             })
               .then(function (resp) {
                 console.log("成功");
+                // window.location.reload();
               })
               .catch(function (err) {
                 console.log(err)
@@ -267,7 +264,7 @@ console.log("========++"+resp.data);
           //添加部门表单传数据
           let formData=[this.ruleForm.name,this.ruleForm.region];
           // console.log(that.ruleForm);
-          this.$axios.get('/department/addApart.do', {
+          this.$axios.get('http://172.16.6.36:9999/manage/apartmentCtroller/addApart.do', {
             params:{
              formData
             }
@@ -320,7 +317,7 @@ console.log("========++"+resp.data);
 <style scoped>
   .button{
     /*float: right;*/
-    margin-left:50px;
+    margin-left:58%;
   }
   .el-select{
     float: left;
