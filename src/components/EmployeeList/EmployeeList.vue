@@ -436,8 +436,8 @@
     color: rgba(43, 43, 43, 0.93);
   }
   .el-select,.el-input{
-    float:left;
-    width: 60%;
+    /*float:left;*/
+    width: 80%;
     /*margin-left: 5%;*/
   }
 

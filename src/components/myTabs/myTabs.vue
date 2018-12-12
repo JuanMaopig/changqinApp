@@ -26,11 +26,11 @@
           <!--套餐管理部分结束-->
         </el-tabs>
       </template>
-      <el-pagination
-        background
-        layout="prev, pager, next"
-        :total="1000"><!--分页的功能-->
-      </el-pagination>
+      <!--<el-pagination-->
+        <!--background-->
+        <!--layout="prev, pager, next"-->
+        <!--:total="1000">&lt;!&ndash;分页的功能&ndash;&gt;-->
+      <!--</el-pagination>-->
     </div>
 </template>
 
