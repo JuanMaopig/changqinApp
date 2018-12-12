@@ -163,7 +163,7 @@
       created(id){
         // console.log("哈哈哈哈哈哈哈哈哈哈哈哈哈");
         var that=id;
-        that.$axios.get('/api/manage/userController/queryUser.do')
+        that.$axios.get('/user/queryUser.do')
           .then(function (resp) {
             // console.log(resp.data);
             that.tableData2=resp.data;
@@ -188,7 +188,7 @@
           type: 'warning'
         }).then(() => {
           let myId=row.user_id;
-          this.$axios.get('/api/manage/userController/deleteUser.do', {
+          this.$axios.get('/user/deleteUser.do', {
             params:{
               myId
             }
@@ -217,7 +217,7 @@
         let searchName=this.input;
         console.log(searchName);
         let that=this;
-        that.$axios.get('/api/manage/userController/searchUser.do',{
+        that.$axios.get('/user/searchUser.do',{
           params:{
             searchName
           }

@@ -158,7 +158,7 @@ export default {
       // let currentPage=1;//设置当前默认在第1页
       // that.pageStatus=false;
       console.log("进来啦=======");
-      that.$axios.get('http://172.16.6.59:8888/manage/apartmentCtroller/operateApart.do')
+      that.$axios.get('/department/operateApart.do')
         .then(function (resp) {
           console.log("请求之后的回调函数执行");
           // console.log(resp.data);
@@ -193,7 +193,8 @@ console.log("========++"+resp.data);
         type: 'warning'
       }).then(() => {
         let myId=row.id;
-        this.$axios.get('http://172.16.6.59:8888/manage/apartmentCtroller/deleteApart.do', {
+        console.lo
+        this.$axios.get('/department/deleteApart.do', {
           params:{
             myId
           }
@@ -233,7 +234,7 @@ console.log("========++"+resp.data);
             let editData=[this.ruleForm.Id,this.ruleForm.name,this.ruleForm.person];
             // console.log(editData);
             // console.log(this.ruleForm.Id);
-            this.$axios.get('http://172.16.6.59:8888/manage/apartmentCtroller/editApart.do', {
+            this.$axios.get('/department/editApart.do', {
               params:{
                 editData
               }
@@ -266,7 +267,7 @@ console.log("========++"+resp.data);
           //添加部门表单传数据
           let formData=[this.ruleForm.name,this.ruleForm.region];
           // console.log(that.ruleForm);
-          this.$axios.get('http://172.16.6.59:8888/manage/apartmentCtroller/addApart.do', {
+          this.$axios.get('/department/addApart.do', {
             params:{
              formData
             }

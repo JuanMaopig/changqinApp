@@ -132,7 +132,7 @@
         </el-form-item>
         <el-form-item label="添加照片：" :label-width="formLabelWidth" prop="dialogImageUrl">
           <el-upload id="addPhoto"
-                     action="http://172.16.6.8:8888/upimg/"
+                     action="/upimg/"
                      :onSuccess="uploadSuccess"
                      ref="upfile"
                      list-type="picture-card"
@@ -182,7 +182,7 @@
         dialogFormVisible: false,
         dialogFormVisible1: false,
         form: {
-          uploadUrl:'http://172.16.6.8:8888/upimg/',
+          uploadUrl:'/upimg/',
           upLoadData:{
             img_base64:"",
             type:1
@@ -239,7 +239,7 @@
       created:function (obj) {
         let currentPage=1;//设置当前默认在第1页
         obj.pageStatus=false;
-        obj.$axios.get('/api/roomTypeStables.do?currentPage='+currentPage)
+        obj.$axios.get('/room/roomTypeStables.do?currentPage='+currentPage)
           .then(function (resp) {
             obj.total=resp.data.pages;//根据后台数据 得到一共有多少页
             obj.tableData=resp.data.data;//查询的数据 每页显示6条
@@ -251,7 +251,7 @@
       currentChange:function (obj) {
         let currentPage=obj;
         let that = this;
-        this.$axios.get('/api/roomTypeStables.do?currentPage='+currentPage)
+        this.$axios.get('/room/roomTypeStables.do?currentPage='+currentPage)
           .then(function (resp) {
             that.total=resp.data.pages;//根据后台数据 得到一共有多少页
             that.tableData=resp.data.data;//查询的数据 每页显示6条
@@ -280,7 +280,7 @@
           if (valid) {
             //获取增加表单的输入框数据
             let formData = [this.form.room_type_name,this.form.hotel_id,this.form.guestNum,this.form.roomPrice,this.form.room_type_more,this.form.room_type_id];
-            this.$axios.get("/api/updateRoomCastle.do",{params: {//获取的参数往后传参
+            this.$axios.get("/room/updateRoomCastle.do",{params: {//获取的参数往后传参
               formData
             }
             })
@@ -341,7 +341,7 @@
           if (valid) {
             //获取增加表单的输入框数据
             let formData = [this.form.room_type_name,this.form.hotelname,this.form.guestNum,this.form.upLoadData.img_base64,this.form.roomNum,this.form.roomPrice,this.form.room_type_more];
-            this.$axios.get("/api/addRoomCastle.do",{params: {//获取的参数往后传参
+            this.$axios.get("/room/addRoomCastle.do",{params: {//获取的参数往后传参
               formData
             }
             })

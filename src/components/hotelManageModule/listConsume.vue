@@ -1,6 +1,9 @@
 <template>
   <div>
+    <!--增加的按钮-->
     <el-button type="primary" v-on:click="showAddConsume" round>添加</el-button>
+    <!--增加的按钮-->
+
     <el-table
       :data="consume.consumeList"
       style="width: 100%"
@@ -47,6 +50,8 @@
         </template>
       </el-table-column>
     </el-table>
+
+    <!--添加的弹框-->
     <el-dialog
       title="添加套餐"
       :visible.sync="consume.dialogFormVisible"
@@ -77,7 +82,7 @@
         </el-form-item>
         <el-row :gutter="20">
           <el-col :span="6" offset="6">
-            <el-button type="primary" @click="consumeOK" plain>确定</el-button>
+            <el-button type="primary" @click="consumeOK" plain>确 定</el-button>
           </el-col>
           <el-col :span="6" offset="3">
             <el-button @click="consumeCancel" plain>取 消</el-button>
@@ -149,7 +154,7 @@
         async getAllConsume(){
           let that=this;
           console.log("kais");
-          let result = await this.$axios.get('/api/getAllConsume.do');
+          let result = await this.$axios.get('/consume/getAllConsume.do');
           let data=result.data;
           this.consume.hotel_name=data.hotelName;
           for (let i=0;i<data.consume.length;i++){
@@ -158,14 +163,17 @@
          }
          this.consume.consumeList=data;
         },
+
+
         async getConsume(page){
           let that=this;
-          let result=await that.$axios.get('/api/getConsume.do', {
+          let result=await that.$axios.get('/consume/getConsume.do', {
             params: {
               start: (page - 1) * 5,
               length: 5,
             }
           });
+
           let data=result.data;
           if(data.pageCount>0){
                 that.consume.page.total=data.pageCount;
@@ -180,10 +188,12 @@
             that.consume.consumeList=data.consume;
             that.consume.active=data.activeName;
         },
-        showAddConsume(){
+
+        showAddConsume(){//添加套餐的方法
           this.consume.dialogFormVisible=true;
           this.consume.OKStatus="addConsume";
         },
+
         showEditConsume(index,row){
           this.consume.dialogFormVisible=true;
           this.consume.OKStatus="editConsume";
@@ -192,8 +202,9 @@
           this.consume.form_Consume.active=row.active_id.map(value=>value.toString());
           console.log(row);
         },
+
         async addConsume(){
-          let addConsume= await this.$axios.post("/api/addConsume.do",this.consume.form_Consume);
+          let addConsume= await this.$axios.post("/consume/addConsume.do",this.consume.form_Consume);
           this.consume.dialogFormVisible = false;
           this.consume.form_Consume.active=[];
           this.consume.form_Consume.hotel_name=[];
@@ -201,11 +212,12 @@
           this.consume.form_Consume.price="";
           this.consume.form_Consume.name="";
         },
+
         editConsume(){
           if(this.consume.form_Consume.price==""){
             this.consume.form_Consume.price=0;
           }
-          this.$axios.post("/api/editConsume.do",{
+          this.$axios.post("/consume/editConsume.do",{
             consume:this.consume.form_Consume
           }).then(result=>{
             console.log(result.data);
@@ -229,6 +241,7 @@
             })
           })
         },
+
         deleteConsume(index,row){
           let id=row.room_comsuem_id;
             this.$confirm('此操作将永久删除该套餐, 是否继续?', '提示', {
@@ -236,7 +249,7 @@
               cancelButtonText: '取消',
               type: 'warning'
             }).then(() => {
-              this.$axios.post("/api/deleteConsume.do",{
+              this.$axios.post("/consume/deleteConsume.do",{
                 "consume_id":row.room_consume_id
               }).then((e)=>{
                 console.log(e.data);

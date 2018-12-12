@@ -21,7 +21,7 @@
 
           <!--套餐管理部分-->
           <el-tab-pane label="套餐管理" name="third">
-
+            <listConsume></listConsume>
           </el-tab-pane>
           <!--套餐管理部分结束-->
         </el-tabs>
@@ -37,12 +37,13 @@
 <script>
 import roomList from '../hotelManageModule/roomList'
 import roomTypeStables from '../hotelManageModule/roomTypeStables'
-
+import listConsume from '../hotelManageModule/listConsume'
     export default {
         name: "myTabs",
       components:{
         roomList:roomList,
-        roomTypeStables:roomTypeStables
+        roomTypeStables:roomTypeStables,
+        listConsume:listConsume
       },
       data() {
         return {

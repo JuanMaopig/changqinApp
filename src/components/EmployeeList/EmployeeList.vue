@@ -13,9 +13,9 @@
           <div style="margin: 10px 0 10px 0;">
             <el-input placeholder="请输入内容" v-model="input" class="input-with-select" @keyup.enter.native="searchBtn">
               <el-select v-model="select" slot="prepend" placeholder="请选择">
-                <el-option label="姓名" value="s_name"></el-option>
-                <el-option label="部门" value="apart"></el-option>
-                <el-option label="职位" value="s_position"></el-option>
+                <el-option label="姓名" value="employee_name"></el-option>
+                <el-option label="编号" value="employee_id"></el-option>
+                <el-option label="职位" value="position"></el-option>
               </el-select>
               <el-button slot="append" icon="el-icon-search" @click.native="searchBtn"></el-button>
             </el-input>
@@ -56,7 +56,7 @@
         width="100">
       </el-table-column>
       <el-table-column
-        prop="depart_id"
+        prop="depart_name"
         label="部门">
       </el-table-column>
       <el-table-column
@@ -93,7 +93,7 @@
         </el-form-item>
         <el-form-item label="职能部门" :label-width="formLabelWidth">
           <el-select v-model="form.depart" placeholder="请选择..." prop="depart">
-            <el-option label="财政部" value="财政部"></el-option>
+            <el-option label="财务部" value="财政部"></el-option>
             <el-option label="管理部" value="管理部"></el-option>
             <el-option label="后勤部" value="后勤部"></el-option>
             <el-option label="外勤部" value="外勤部"></el-option>
@@ -228,14 +228,16 @@
         console.log(this.select);//获取条件选择的value值
         console.log(this.input);//获取输入框的值
         let mysel=[this.select,this.input];
-        this.$axios.get('http://172.16.6.36:9999/manage/staffController/mysearchBtn.do', {
+        this.$axios.get('/staff/mysearchBtn.do', {
               params:{
                 mysel
               }
             })
               .then(function (resp) {
+                console.log("后台返回的值=="+resp.data[0]);
                 console.log(resp.data[0]);
-                console.log(resp.data[0].s_name);
+                console.log(resp.data);
+                console.log(resp.data[0].employee_id);
                 //====================================还有一个BUG======================================
                 // let mypass=JSON.stringify(resp.data);
 // console.log(mypass[0]+mypass[1]);
@@ -243,7 +245,7 @@
                 that.tableData2=resp.data[0];//数据成功传输过来
                 that.totalCount=[that.tableData2].length;
                 // that.totalCount=10;
-                // console.log(that.totalCount);
+                console.log(that.tableData2);
                 console.log(that.totalCount);
               });
       },
@@ -256,7 +258,7 @@
       },
       created(id){
         var that=id;
-        that.$axios.get('http://172.16.6.36:9999/manage/staffController/queryStaff.do')
+        that.$axios.get('/staff/staffController/queryStaff.do')
           .then(function (resp) {
             console.log(resp.data);
             that.tableData2=resp.data;
@@ -276,13 +278,14 @@
       //删除
       handleDelete(index, row) {
         console.log(index, row);
+        console.log("我的=="+ row.employee_id);
         this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          let myId=row.id;
-          this.$axios.get('http://172.16.6.36:9999/manage/staffController/deleteStaff.do', {
+          let myId=row.employee_id;
+          this.$axios.get('/staff/deleteStaff.do', {
             params:{
               myId
             }
@@ -341,7 +344,7 @@
             // let newadd=[this.Form.name,this.Form.sex,this.Form.depart,this.Form.tel];
 
             // console.log(newadd);
-            this.$axios.get('http://172.16.6.36:9999/manage/staffController/addStaff.do', {
+            this.$axios.get('/staff/addStaff.do', {
               params:{
                 myform
               }
@@ -380,13 +383,14 @@
 
     //  编辑
       handleEdit(index,row){
-        this.form.name=row.s_name;
+        this.form.name=row.employee_name;
         this.form.sex=row.sex;
         this.form.hotel=row.hotel;
-        this.form.depart_=row.apart;
-        this.form.position=row.s_position;
-        this.form.tel=row.s_tel;
-        this.form.id=row.id;
+
+        this.form.depart=row.depart_name;
+        this.form.position=row.position;
+        this.form.tel=row.tel;
+        this.form.id=row.employee_id;
       },
       submit_Form(form){
         this.$refs[form].validate((valid) => {
@@ -394,7 +398,7 @@
             //编辑部门表单传数据
             let editData=this.form;
             console.log(editData);
-            this.$axios.get('http://172.16.6.36:9999/manage/staffController/editStaff.do', {
+            this.$axios.get('/staff/editStaff.do', {
               params:{
                 editData
               }

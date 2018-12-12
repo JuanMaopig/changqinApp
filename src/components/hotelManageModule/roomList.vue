@@ -185,7 +185,7 @@
         handleclose(){},
         //获取页面的数据
         created(id){
-          id.$axios.get('/api/roomInformation.do')
+          id.$axios.get('/room/roomInformation.do')
             .then(function (resp) {
               // console.log("2222222");
               id.roomtableData=resp.data;
@@ -209,7 +209,7 @@
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
-            this.$axios.get('/api/roomDelete.do', {
+            this.$axios.get('/room/roomDelete.do', {
               params:{
                 room_id:row.room_id
               }
@@ -239,7 +239,7 @@
           if (valid) {
             //编辑部门表单传数据
 
-            this.$axios.get('/api/roomModify.do', {
+            this.$axios.get('/room/roomModify.do', {
               params:{
                 room_type_id:this.Roomform.room_type_id,
                 door_hao:this.Roomform.door_hao,
@@ -266,7 +266,7 @@
             //添加部门表单传数据
 
             // let formData=[that.form.input,that.form.value1];
-            that.$axios.get('/api/roomNew.do', {
+            that.$axios.get('/room/roomNew.do', {
               params:{
                 room_id:row.room_id,
                 door_hao:that.Roomform.value1,
@@ -305,7 +305,7 @@
       },
     //房间号搜索
     newRoom(id){
-      id.$axios.get('/api/selectRoom.do',{
+      id.$axios.get('/room/selectRoom.do',{
         params:{room_id:input1}
       }).then(function (resp) {
           id.roomtableData=resp.data;
